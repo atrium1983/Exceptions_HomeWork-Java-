@@ -1,80 +1,83 @@
 package HomeWork_3.model;
 
+import HomeWork_3.model.writer.MyException;
 import HomeWork_3.model.writer.Writable;
 
+import java.io.File;
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Service {
     List<String> personalInfo;
-    private NoteBook noteBook;
     Writable writable;
-    String filePath = "src/HomeWork_3/model/writer/person.txt";
 
     public Service() {
-        noteBook = new NoteBook();
         personalInfo = new ArrayList<>();
     }
 
-    public void addContact(String text){
+    public String addContact(String text) throws MyException {
         setPersonalInfo(text);
-        noteBook.addContact(createContact());
+        return save(createContact());
     }
-
     public void setWritable(Writable writable) {
         this.writable = writable;
     }
-
-    public void save() {
-        writable.save(noteBook, filePath);
-    }
-
-    public void load() {
-        noteBook = (NoteBook) writable.read(filePath);
-    }
-
-    public String getInfo() {
-        return noteBook.getInfo();
-    }
-
-        public void setPersonalInfo(String text){
-            String[] personalInfo = text.split(" ");
-            if(checkLengthExceptions(checkInputLength(personalInfo))){
-                this.personalInfo = new ArrayList<>(List.of(personalInfo));
-            } else {
-                throw new RuntimeException("Повторите ввод");
-            }
+    public String save(Contact contact){
+        try {
+            writable.save(contact);
+        } catch (MyException | IOException e) {
+            System.out.println(e.getMessage());
         }
-
-        public Contact createContact() {
-            String lastName;
-            String name;
-            String middleName;
-            LocalDate birthDate = getDate();
-            long phoneNumber = getPhoneNumber();
-            String gender = getGender();
-            if(personalInfo.size() == 3) {
-                lastName = getName("Фамилия");
-                name = getName("Имя");
-                middleName = getName("Отчество");
-            } else {
-                throw new RuntimeException ("Данные введены некорретно");
+        return contact.getInfo();
+    }
+    public void read() throws MyException {
+        File folder = new File("src/HomeWork_3/model/writer/contacts/");
+        File [] listOfFiles = folder.listFiles();
+        assert listOfFiles != null;
+        if (listOfFiles.length != 0) {
+            for (File file : listOfFiles) {
+                if (file.isFile()) {
+                    try {
+                        writable.read(file.getName());
+                    } catch (MyException e){
+                        System.out.println(e.getMessage());
+                    }
+                }
             }
-            return new Contact(lastName, name, middleName, birthDate, phoneNumber, gender);
+        } else {
+            throw new MyException("Контакты отсутствуют");
         }
+    }
 
-
+    public void setPersonalInfo(String text) throws MyException {
+        String[] personalInfo = text.split(" ");
+        if(checkLengthExceptions(checkInputLength(personalInfo))){
+            this.personalInfo = new ArrayList<>(List.of(personalInfo));
+        } else {
+            throw new MyException("Повторите ввод");
+        }
+    }
+    public Contact createContact() throws MyException {
+        String lastName;
+        String name;
+        String middleName;
+        LocalDate birthDate = getDate();
+        long phoneNumber = getPhoneNumber();
+        String gender = getGender();
+        if(personalInfo.size() == 3) {
+            lastName = getName("Фамилия");
+            name = getName("Имя");
+            middleName = getName("Отчество");
+        } else {
+            throw new MyException ("Данные введены некорретно");
+        }
+        return new Contact(lastName, name, middleName, birthDate, phoneNumber, gender);
+    }
         public int checkInputLength (String[]personalInfo){
-            if (personalInfo.length < 6) {
-                return -1;
-            } else if (personalInfo.length > 6) {
-                return 1;
-            } else {
-                return 0;
-            }
+            return Integer.compare(personalInfo.length, 6);
         }
-
         public boolean checkLengthExceptions(int code){
             if (code == -1) {
                 System.out.println("Вы ввели недостаточно информации.");
@@ -86,8 +89,7 @@ public class Service {
                 return true;
             }
         }
-
-        public LocalDate getDate(){
+        public LocalDate getDate() throws MyException {
             LocalDate date = null;
             String str;
             for (int i = 0; i < personalInfo.size(); i++) {
@@ -96,13 +98,12 @@ public class Service {
                     try {
                         date = LocalDate.parse(str);
                     } catch (Exception e) {
-                        throw new RuntimeException("Вы ввели некорректную дату. Формат ввода должен быть YYYY.MM.DD");
+                        throw new MyException("Вы ввели некорректную дату. Формат ввода должен быть YYYY.MM.DD");
                     }
                 }
             }
             return date;
         }
-
         public long getPhoneNumber(){
             long phoneNumber = 0;
             for (int i = 0; i < personalInfo.size(); i++) {
@@ -112,25 +113,22 @@ public class Service {
             }
             return phoneNumber;
         }
-
-        public String getGender(){
+        public String getGender() throws MyException {
             String gender = null;
             for (int i = 0; i < personalInfo.size(); i++) {
                 if(personalInfo.get(i).length() == 1) {
                     if (personalInfo.get(i).equals("m") | personalInfo.get(i).equals("f")) {
                         gender = personalInfo.remove(i);
                     } else {
-                        throw new RuntimeException("Пол введен некорректно");
+                        throw new MyException("Пол введен некорректно");
                     }
                 }
             }
             return gender;
     }
-
         public boolean checkIfText(String text){
-            return text.matches("\\D+")? true : false;
+            return text.matches("\\D+");
         }
-
         public String getName(String comment){
             String name;
             if(checkIfText(personalInfo.get(0))) {

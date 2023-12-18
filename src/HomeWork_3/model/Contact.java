@@ -19,17 +19,8 @@ public class Contact implements Serializable {
         this.phoneNumber = phoneNumber;
         this.gender = gender;
     }
-    public void setName(String name){
-        this.name = name;
-    }
-    public void setBirthDate(LocalDate birthDate){
-        this.birthDate = birthDate;
-    }
-    public void setPhoneNumber(long phoneNumber){
-        this.phoneNumber = phoneNumber;
-    }
-    public void setGender(String gender){
-        this.gender = gender;
+    public String getLastName(){
+        return this.lastName;
     }
 
     public String getInfo(){

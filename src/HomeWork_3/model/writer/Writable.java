@@ -1,9 +1,10 @@
 package HomeWork_3.model.writer;
 
-import java.io.Serializable;
+import HomeWork_3.model.Contact;
+import java.io.IOException;
 
 public interface Writable {
 
-    boolean save(Serializable serializable, String filePath);
-    Object read(String filePath);
+    void save(Contact contact) throws IOException, MyException;
+    void read(String fileName) throws MyException;
 }

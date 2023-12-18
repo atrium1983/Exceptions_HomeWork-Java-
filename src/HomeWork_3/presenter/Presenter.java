@@ -1,16 +1,13 @@
 package HomeWork_3.presenter;
 
 import HomeWork_3.model.Service;
+import HomeWork_3.model.writer.MyException;
 import HomeWork_3.model.writer.Writable;
 import HomeWork_3.view.View;
 
-import java.time.LocalDate;
-
 public class Presenter {
-
     private final View view;
     private final Service service;
-    private final String positive = "Успешно!\n";
 
     public Presenter(View view){
         this.view = view;
@@ -20,24 +17,21 @@ public class Presenter {
     public void setWritable(Writable writable) {
         service.setWritable(writable);
     }
-    public void save(){
-        service.save();
-        view.answer(positive);
-    }
-
-    public void load(){
-        service.load();
-        view.answer(positive);
-    }
-
     public void addContact(String text){
-        service.addContact(text);
-        view.answer(positive);
-        print();
+        String line;
+        try {
+            line = service.addContact(text);
+        } catch (MyException e) {
+            throw new RuntimeException(e.getMessage());
+        }
+        view.answer("Успешно!\n");
+        view.answer(line);
     }
-
-    public void print(){
-        view.answer(service.getInfo());
+    public void read(){
+        try {
+            service.read();
+        } catch (MyException e){
+            System.out.println(e.getMessage());
+        }
     }
-
 }

@@ -6,12 +6,10 @@ import HomeWork_3.presenter.Presenter;
 import java.util.Scanner;
 
 public class ConsoleUI implements View {
-
     private Scanner scanner;
     private Presenter presenter;
     private boolean work;
     private MainMenu menu;
-    private String error = "Вы ввели некорректное значение. Введите целое число";
 
     public ConsoleUI() {
         scanner = new Scanner(System.in);
@@ -28,25 +26,17 @@ public class ConsoleUI implements View {
             execute();
         }
     }
-
     private void hello() {
         answer("Добро пожаловать в меню приложение");
     }
-
     public void finish() {
         answer("Сеанс завершен. До свидания!");
         work = false;
         scanner.close();
     }
-
     private void printMenu(){
         answer(menu.getMenu());
     }
-
-    public void printContacts(){
-        presenter.print();
-    }
-
     public void addContact(){
         String text;
         answer("Введите следующие данные через пробел в произвольном порядке: " +
@@ -54,7 +44,6 @@ public class ConsoleUI implements View {
         text = scanner.nextLine();
         presenter.addContact(text);
     }
-
     private void execute(){
         String input = scanner.nextLine();
         if (checkIfInt(input)){
@@ -64,7 +53,6 @@ public class ConsoleUI implements View {
             }
         }
     }
-
     private boolean checkIfInt(String text){
         if (text.matches("[0-9]+")){
             return true;
@@ -73,7 +61,6 @@ public class ConsoleUI implements View {
             return false;
         }
     }
-
     private boolean checkCommand(int numCommand){
         if (numCommand <= menu.getSize()){
             return true;
@@ -82,24 +69,17 @@ public class ConsoleUI implements View {
             return false;
         }
     }
-
     private void inputError(){
-        answer(error);
+        answer("Вы ввели некорректное значение. Введите целое число");
     }
-
     public void setWritable(Writable writable) {
         presenter.setWritable(writable);
     }
-    public void load(){
-        presenter.load();
-    }
-
-    public void save(){
-        presenter.save();
-    }
-
     @Override
     public void answer(String text) {
         System.out.println(text);
+    }
+    public void read(){
+        presenter.read();
     }
 }
